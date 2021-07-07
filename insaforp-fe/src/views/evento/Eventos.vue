@@ -8,15 +8,20 @@
                 <thead>
                     <tr>
                         <th>id</th>
+                        <th>nombre</th>
                         <th>descripcion</th>
                         <th>fecha evento</th>
                         <th>Facilitador</th>
-                        <th>view</th>
+                        <th>Opciones</th>
                     </tr>
-                </thead>
+                </thead>                    
+                <tbody>
                     <tr v-for="(evento, index) in eventos" :key="index">
                         <td>
                             {{evento.id}}
+                        </td>
+                        <td>
+                            {{evento.nombre}}
                         </td>
                         <td>
                             {{evento.descripcion}}
@@ -27,13 +32,11 @@
                         <td>
                             {{evento.facilitador}}
                         </td>
-                        <td>
-                            <b-button variant="outline-primary" @click="verEvento(evento.id)">Crear Evento</b-button>
+                        <td>                            
+                            <b-button variant="outline-primary" @click="modificar(evento.id)">Actualizar</b-button> -
+                            <b-button variant="outline-danger" @click="borrar(evento.id)">Eliminar</b-button>
                         </td>
                     </tr>
-
-                <tbody>
-
                 </tbody>
             </table>
         </div>
@@ -50,23 +53,26 @@ export default {
         }
     },
     created(){
-        this.getEventos();
-
         this.getDocentes();
+        this.getEventos();
+        
+
+        
     },
     methods:{
         async getEventos(){
             try {
                 const eventosDB = await this.axios.get('eventos');
 
-                await eventosDB.data.forEach(element => {
-                   // console.log(element);
+                await eventosDB.data.forEach(element => {                   
                     let evento = {};
 
                     evento.id = element.idEvento;
+                    evento.nombre = element.nombre;
                     evento.descripcion = element.descripcion;
                     evento.fechaInicio = element.fechaInicio;
-                    evento.facilitador = element.facilitador;
+                    evento.facilitador = this.getDocenteById(element.facilitador);
+                    
                     this.eventos.push(evento);
 
                 });
@@ -85,25 +91,48 @@ export default {
          crearEvento(id){
             this.$router.push('crear-eventos')
         },
-        async getDocentes(){
-            let docente = {};
-            try {
-                const docentesDB = await this.axios.get('docentes');
-                
-                await docentesDB.data.forEach(element2 => {                                
-                   
-                   this.docentes.push(element2);
+        
+        modificar(id){
+            this.$router.push('evento/modificar/'+id)
+        },
+        crear(){
+            this.$router.push('evento/crearEventos')
+        },
+        async borrar(id){
+             try {
+                if(confirm("Esta seguro en eliminar este Programa")){
+                    const programassDB = await this.axios.delete('eventos/'+ id); 
+                    this.eventos=[] 
+                    this.getEventos();                    
+                }
 
-                   console.log(element2);
-
-                });
-     
-
-                //console.log(eventosDB.data);
+              
             } catch (error) {
                 console.log(error);
             }
         },
+        async getDocentes(){
+              try {
+                const docentesDB = await this.axios.get('docentes');
+
+                await docentesDB.data.forEach(element => {
+                   
+                    let docente = {};
+                    docente.id = element.idDocente;                    
+                    docente.Nombre = element.Nombre;                    
+                    this.docentes.push(JSON.parse(JSON.stringify(docente)));                    
+
+                });              
+
+              
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        getDocenteById(id){
+            const resultado = this.docentes.find( docente => docente.id === id);
+            return resultado.Nombre;
+        }
     }
 }
 </script>

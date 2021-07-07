@@ -29,4 +29,25 @@ class CalendarizacionController extends Controller
         
         return $calendarizacion;
     }
+    public function show($id){
+
+        $calendarizacion = CalendarizacionEvento::findOrFail($id);
+        
+        return $calendarizacion;
+    }
+
+    public function update(Request $request, $id){
+
+        $calendarizacion = CalendarizacionEvento::findOrFail($id)
+        ->update($request->all());
+        
+        return $calendarizacion;
+    }
+
+    public function destroy($id){
+
+        CalendarizacionEvento::destroy($id);
+        
+        return response("calendarizacion Eliminado");                
+    }
 }

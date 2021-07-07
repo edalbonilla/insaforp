@@ -40,9 +40,24 @@ class CreateEventoTable extends Migration
             $table->integer('ordenCompra');
             $table->integer('compraBolsa');
             $table->integer('item');
-            $table->string('programa',100);
-            $table->string('facilitador',100);
-            $table->timestamps();        
+            $table->integer('programa')->unsigned();
+            $table->integer('facilitador')->unsigned();
+            $table->timestamps();
+
+            $table->index(["programa"], 'indx_progeama');
+
+            $table->index(["facilitador"], 'facilitador');
+
+
+            $table->foreign('facilitador', 'facilitador')
+                ->references('idDocente')->on('docentes')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+
+            $table->foreign('programa', 'indx_progeama')
+                ->references('idPrograma')->on('programa')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 

@@ -27,4 +27,26 @@ class ProgramaController extends Controller
         
         return $programa;
     }
+
+    public function show($id){
+
+        $programa = Programa::findOrFail($id);
+        
+        return $programa;
+    }
+
+    public function update(Request $request, $id){
+
+        $programa = Programa::findOrFail($id)
+        ->update($request->all());
+        
+        return $programa;
+    }
+
+    public function destroy($id){
+
+        Programa::destroy($id);
+        
+        return response("Programa Eliminado");                
+    }
 }

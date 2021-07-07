@@ -44,4 +44,26 @@ class EventoController extends Controller
                                  ]);
         return $evento;
     }
+
+    public function show($id){
+
+        $evento = Evento::findOrFail($id);
+        
+        return $evento;
+    }
+
+    public function update(Request $request, $id){
+
+        $evento = Evento::findOrFail($id)
+        ->update($request->all());
+        
+        return $evento;
+    }
+
+    public function destroy($id){
+
+        Evento::destroy($id);
+        
+        return response("Evento Eliminado");                
+    }
 }

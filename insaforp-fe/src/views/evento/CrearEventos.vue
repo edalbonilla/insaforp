@@ -1,14 +1,12 @@
 
 <template>
     <div>
-        <h1>Informacion del evento </h1>
-        <form class="pure-form pure-form-aligned center">
-        <fieldset>
-    
-            <legend class="primary-title text-center ">
+        <legend class="primary-title text-center ">
                 <p>Centro de formacion XYZ</p>
-                <p>Información de la acción formativa</p>
-            </legend>
+                <p>Creación de Eventos</p>
+        </legend>
+        <form class="pure-form pure-form-aligned center">
+        <fieldset>            
             <div class="pure-g">
                 <!--FORM PRIMERA MITAD-->
                 <div class="pure-u-1-2">
@@ -71,13 +69,13 @@
                     </div>
                     <div class="pure-control-group">
                         <label for="evet-name">FECHA Y HORA</label>
-                        <input  type="date" v-model="horario.diaEvento">
-                        <input  type="time" v-model="horario.horaInicio">
-                        <input  type="time" v-model="horario.horaFinal">
-                        <b-button variant="primary" @click="crearHorario()">Crear Evento</b-button>
+                        <input  type="date" v-model="horario.diaEvento"> -
+                        <input  type="time" v-model="horario.horaInicio"> -
+                        <input  type="time" v-model="horario.horaFinal"> -
+                        <b-button variant="primary" @click="crearHorario()">Asignar</b-button>
                     </div>
-                    <div class="table">
-                        <table>
+                    <div>
+                        <table  class="table">
                             <thead>
                                 <tr>
                                     <th>DIA</th>
@@ -86,7 +84,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="hora of horarios">
+                                <tr v-for="(hora, index) of horarios" :key="index">
                                    <td>{{hora.diaEvento}}</td>
                                    <td>{{hora.horaInicio}}</td>
                                    <td>{{hora.horaFinal}}</td>
@@ -142,13 +140,15 @@
                     <div class="pure-control-group">
                         <label for="evet-description">PROGRAMA</label>
                         <select name="" id="" v-model="evento.programa">
-                            <option value="Programa">Programa</option>
+                            <option value=''>Seleccione un Programa</option>
+                            <option v-for="(programa, index) of programas" :key="index" :value="programa.id">{{programa.Nombre}}</option>
                         </select>
                     </div>
                     <div class="pure-control-group">
                         <label for="evet-description">FACILITADOR</label>
                         <select name="" id="" v-model="evento.facilitador">
-                            <option value="Jairo Machuca">Jairo Machuca</option>
+                             <option value=''>Seleccione un Facilitador</option>
+                            <option v-for="(docente, index) of docentes" :key="index" :value="docente.id">{{docente.Nombre}}</option>
                         </select>
                     </div>
     
@@ -171,64 +171,68 @@
         data(){
             return{
                 evento:{                    
-                    nombre: "nombre del curso",
-                    descripcion: "Curso de formación profesional 1",
-                    fechaInicio: "2021-07-04",
-                    fechaFin: "2021-07-10",
-                    ubicacion: "soyapango",
-                    departamento: "san salvador",
-                    municipio: "soyapango",
-                    horas_curso: 10,
-                    modalidad: "presencial",
-                    tipo_costo: "clientes",
-                    costo: 950,
-                    cantParticipante: 15,
-                    cantEvaluaciones: 20,
-                    contrato: 253689,
-                    ordenCompra: 254897,
-                    compraBolsa: 25,
-                    item: 4,
+                    nombre: '',
+                    descripcion: "",
+                    fechaInicio: "",
+                    fechaFin: "",
+                    ubicacion: "",
+                    departamento: "",
+                    municipio: "",
+                    horas_curso: '',
+                    modalidad: "",
+                    tipo_costo: "",
+                    costo: '',
+                    cantParticipante: '',
+                    cantEvaluaciones: '',
+                    contrato: '',
+                    ordenCompra: '',
+                    compraBolsa: '',
+                    item: '',
                     programa: "",
                     facilitador: ""
                    },
                    horario:{
-                        idEvento: 1,
-                        diaEvento: "2021-07-05",
-                        horaInicio: "08:00:00",
-                        horaFinal: "16:00:00",
+                        idEvento: 0,
+                        diaEvento: "",
+                        horaInicio: "",
+                        horaFinal: "",
                    },
                    horarios:[],
-                   savehorarios:[]
+                   savehorarios:[],
+                   docentes:[],
+                   programas:[] 
                    
                 
             }
+        },
+         created(){
+        this.getDocentes();
+        this.getProgramas();                
         },
         methods:{
             async crearEvento(){
 
                 try {
-                 console.log(this.evento);
                  
-                 const eventoDB = await this.axios.post('eventos',this.evento); 
+                 
+                 const eventoDB = await this.axios.post('eventos',this.evento);                  
 
-                 console.log(eventoDB);
-
-                 let horario = [];
+                 
                  this.horarios.forEach(element => {
+                    let horario = {};
                     horario.idEvento = eventoDB.data.id;
                     horario.diaEvento = element.diaEvento;
                     horario.horaInicio =element.horaInicio;
                     horario.horaFinal =element.horaFinal;   
-
-                    this.saveHorario(horario);
-                    
-                  
+                    this.saveHorario(horario);                                                         
                      
                  });              
+                  alert('Creado exitosamente');
+                  this.$router.push('/eventos')
                  
                  
                 } catch (error) {
-                    console.log(error);
+                    alert(error);
                 }
                  
             },
@@ -240,7 +244,7 @@
                  horario.horaFinal =this.horario.horaFinal;
 
                  this.horarios.push(horario);
-                 console.log(this.horarios);
+                
                  
             },
              async saveHorario(horario){
@@ -251,7 +255,45 @@
 
                                  
                  
-            } 
+            },
+            async getDocentes(){
+              try {
+                const docentesDB = await this.axios.get('docentes');
+
+                await docentesDB.data.forEach(element => {
+                   
+                    let docente = {};
+                    docente.id = element.idDocente;                    
+                    docente.Nombre = element.Nombre;                    
+                    this.docentes.push(JSON.parse(JSON.stringify(docente)));                    
+
+                });              
+
+              
+                } catch (error) {
+                    alert(error);
+                }
+            },
+            async getProgramas(){
+            try {
+                const programasDB = await this.axios.get('programas');
+
+                await programasDB.data.forEach(element => {
+                   
+                    let programa = {};
+                    programa.id = element.idPrograma;                    
+                    programa.Nombre = element.Nombre; 
+                    programa.descripcion = element.Descripcion; 
+                    this.programas.push(programa);
+
+                });              
+
+              
+            } catch (error) {
+                alert(error);
+            }
+        },
+        
         }
     }
 

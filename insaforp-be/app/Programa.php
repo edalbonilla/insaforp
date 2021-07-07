@@ -8,5 +8,6 @@ class Programa extends Model
 {
     //
     protected $table = 'programa';
+    protected $primaryKey = 'idPrograma';
     protected $fillable = ["Nombre", "Descripcion"];
 }
