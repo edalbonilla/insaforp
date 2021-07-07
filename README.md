@@ -12,10 +12,12 @@ levantar aplicacion en modo local modo desarrollo.
 ### Front End ###
 
 * Configurar la ruta del BE en el archivo main.ts si es que cambia la ruta de localhost axios.defaults.baseURL = 'http://localhost:8000/api/';
-* ejecutar el comando npm run serve
+* ejecutar el comando npm run serve 
 
 
-### APIS ###+--------+-----------+---------------------------------------+-------------------------+--------------------------------------------------------+------------+
+
+### APIS ###
++--------+-----------+---------------------------------------+-------------------------+--------------------------------------------------------+------------+
 | Domain | Method    | URI                                   | Name                    | Action                                                 | Middleware |
 +--------+-----------+---------------------------------------+-------------------------+--------------------------------------------------------+------------+
 |        | GET|HEAD  | /                                     |                         | Closure                                                | web        |
